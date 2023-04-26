@@ -11,7 +11,8 @@ class HtmlController {
     @GetMapping("/")
     fun smarthome(model: Model): String {
         val title = "smarthome"
-        model["title"] = title
+        model["title"] = "$title zzz"
+        model["info"] = "Some useful info will appear here..."
         return title
     }
 
