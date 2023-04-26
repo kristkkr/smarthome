@@ -6,6 +6,7 @@ plugins {
 	kotlin("jvm") version "1.7.22"
 	kotlin("plugin.spring") version "1.7.22"
 	kotlin("plugin.jpa") version "1.7.22"
+	id("com.apollographql.apollo3") version "3.8.1"
 }
 
 group = "com.krossholm"
@@ -25,6 +26,7 @@ dependencies {
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 	runtimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("com.apollographql.apollo3:apollo-runtime:3.8.1")
 }
 
 tasks.withType<KotlinCompile> {
@@ -36,4 +38,11 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+apollo {
+	service("service") {
+		schemaFile.set(file("src/main/graphql/tibber.graphqls"))
+		packageName.set("com.krossholm")
+	}
 }

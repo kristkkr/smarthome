@@ -1,0 +1,1380 @@
+type Address {
+  address1: String
+
+  address2: String
+
+  address3: String
+
+  city: String
+
+  postalCode: String
+
+  country: String
+
+  latitude: String
+
+  longitude: String
+}
+
+"""
+The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
+"""
+scalar String
+
+type ContactInfo {
+  """
+  The email of the corresponding entity
+  """
+  email: String
+
+  """
+  The mobile phone no of the corresponding entity
+  """
+  mobile: String
+}
+
+type LegalEntity {
+  id: ID!
+
+  """
+  First/Christian name of the entity
+  """
+  firstName: String
+
+  """
+  'true' if the entity is a company
+  """
+  isCompany: Boolean
+
+  """
+  Full name of the entity
+  """
+  name: String!
+
+  """
+  Middle name of the entity
+  """
+  middleName: String
+
+  """
+  Last name of the entity
+  """
+  lastName: String
+
+  """
+  Organization number - only populated if entity is a company (isCompany=true)
+  """
+  organizationNo: String
+
+  """
+  The primary language of the entity
+  """
+  language: String
+
+  """
+  Contact information of the entity
+  """
+  contactInfo: ContactInfo
+
+  """
+  Address information for the entity
+  """
+  address: Address
+}
+
+"""
+The `ID` scalar type represents a unique identifier, often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"4"`) or integer (such as `4`) input value will be accepted as an ID.
+"""
+scalar ID
+
+"""
+The `Boolean` scalar type represents `true` or `false`.
+"""
+scalar Boolean
+
+type HomeConsumptionPageInfo implements PageInfo {
+  """
+  The global ID of the last element in the list
+  """
+  endCursor: String
+
+  """
+  True if further pages are available
+  """
+  hasNextPage: Boolean
+
+  """
+  True if previous pages are available
+  """
+  hasPreviousPage: Boolean
+
+  """
+  The global ID of the first element in the list
+  """
+  startCursor: String
+
+  """
+  The number of elements in the list
+  """
+  count: Int
+
+  """
+  The currency of the page
+  """
+  currency: String
+
+  """
+  Page total cost
+  """
+  totalCost: Float
+
+  """
+  Page energy cost
+  """
+  energyCost: Float @deprecated(reason: "redundant")
+
+  """
+  Total consumption for page
+  """
+  totalConsumption: Float
+
+  """
+  Number of entries that have been filtered from result set due to empty nodes
+  """
+  filtered: Int!
+}
+
+"""
+The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
+"""
+scalar Int
+
+"""
+The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](https://en.wikipedia.org/wiki/IEEE_floating_point).
+"""
+scalar Float
+
+type HomeProductionPageInfo implements PageInfo {
+  """
+  The global ID of the last element in the list
+  """
+  endCursor: String
+
+  """
+  True if further pages are available
+  """
+  hasNextPage: Boolean
+
+  """
+  True if previous pages are available
+  """
+  hasPreviousPage: Boolean
+
+  """
+  The global ID of the first element in the list
+  """
+  startCursor: String
+
+  """
+  The number of elements in the list
+  """
+  count: Int
+
+  """
+  The currency of the page
+  """
+  currency: String
+
+  """
+  Page total profit
+  """
+  totalProfit: Float
+
+  """
+  Page total production
+  """
+  totalProduction: Float
+
+  """
+  Number of entries that have been filtered from result set due to empty nodes
+  """
+  filtered: Int!
+}
+
+type Price {
+  """
+  The total price (energy + taxes)
+  """
+  total: Float
+
+  """
+  Nord Pool spot price
+  """
+  energy: Float
+
+  """
+  The tax part of the price (guarantee of origin certificate, energy tax (Sweden only) and VAT)
+  """
+  tax: Float
+
+  """
+  The start time of the price
+  """
+  startsAt: String
+
+  """
+  The price currency
+  """
+  currency: String!
+
+  """
+  The price level compared to recent price values
+  """
+  level: PriceLevel
+}
+
+"""
+Price level based on trailing price average (3 days for hourly values and 30 days for daily values)
+"""
+enum PriceLevel {
+  """
+  The price is greater than 90 % and smaller than 115 % compared to average price.
+  """
+  NORMAL
+
+  """
+  The price is greater than 60 % and smaller or equal to 90 % compared to average price.
+  """
+  CHEAP
+
+  """
+  The price is smaller or equal to 60 % compared to average price.
+  """
+  VERY_CHEAP
+
+  """
+  The price is greater or equal to 115 % and smaller than 140 % compared to average price.
+  """
+  EXPENSIVE
+
+  """
+  The price is greater or equal to 140 % compared to average price.
+  """
+  VERY_EXPENSIVE
+}
+
+type SubscriptionPriceEdge {
+  """
+  The global ID of the element
+  """
+  cursor: String!
+
+  """
+  A single price node
+  """
+  node: Price
+}
+
+interface PageInfo {
+  endCursor: String
+
+  hasNextPage: Boolean
+
+  hasPreviousPage: Boolean
+
+  startCursor: String
+}
+
+type SubscriptionPriceConnectionPageInfo implements PageInfo {
+  endCursor: String
+
+  hasNextPage: Boolean
+
+  hasPreviousPage: Boolean
+
+  startCursor: String
+
+  resolution: String!
+
+  currency: String!
+
+  count: Int!
+
+  precision: String
+
+  minEnergy: Float
+
+  minTotal: Float
+
+  maxEnergy: Float
+
+  maxTotal: Float
+}
+
+type SubscriptionPriceConnection {
+  pageInfo: SubscriptionPriceConnectionPageInfo!
+
+  edges: [SubscriptionPriceEdge]!
+
+  nodes: [Price]!
+}
+
+enum PriceResolution {
+  HOURLY
+
+  DAILY
+}
+
+type PriceInfo {
+  """
+  The energy price right now
+  """
+  current: Price
+
+  """
+  The hourly prices of the current day
+  """
+  today: [Price]!
+
+  """
+  The hourly prices of the upcoming day
+  """
+  tomorrow: [Price]!
+
+  """
+  Range of prices relative to before/after arguments
+  """
+  range("Temporal resolution" resolution: PriceResolution!, "Take the `n` first results from cursor. Cannot be used in conjunction with `last`" first: Int, "Take the `n` last results from cursor. Cannot be used in conjunction with `first`" last: Int, "Base64-encoded ISO8601 date\/time cursor position. Cannot be used in conjunction with `after`" before: String, "Base64-encoded ISO8601 date\/time cursor position. Cannot be used in conjunction with `before`" after: String): SubscriptionPriceConnection
+}
+
+enum PriceRatingLevel {
+  """
+  The price is within the range of what is considered being normal (market dependent; see 'priceRating.thresholdPercentages' for limits)
+  """
+  NORMAL
+
+  """
+  The price is within the range of what is considered being low (market dependent; see 'priceRating.thresholdPercentages' for limits)
+  """
+  LOW
+
+  """
+  The price is within the range of what is considered being high (market dependent; see 'priceRating.thresholdPercentages' for limits)
+  """
+  HIGH
+}
+
+type PriceRatingEntry {
+  """
+  The start time of the price
+  """
+  time: String!
+
+  """
+  Nord Pool spot price
+  """
+  energy: Float!
+
+  """
+  The total price (incl. tax)
+  """
+  total: Float!
+
+  """
+  The tax part of the price (guarantee of origin certificate, energy tax (Sweden only) and VAT)
+  """
+  tax: Float!
+
+  """
+  The percentage difference compared to the trailing price average (1 day for 'hourly', 30 days for 'daily' and 32 months for 'monthly')
+  """
+  difference: Float!
+
+  """
+  The price level compared to recent price values (calculated using 'difference' and 'priceRating.thresholdPercentages')
+  """
+  level: PriceRatingLevel!
+}
+
+type PriceRatingType {
+  """
+  Lowest Nord Pool spot price over the time period
+  """
+  minEnergy: Float!
+
+  """
+  Highest Nord Pool spot price over the time period
+  """
+  maxEnergy: Float!
+
+  """
+  Lowest total price (incl. tax) over the time period
+  """
+  minTotal: Float!
+
+  """
+  Highest total price (incl. tax) over the time period
+  """
+  maxTotal: Float!
+
+  """
+  The price currency
+  """
+  currency: String!
+
+  """
+  The individual price entries aggregated by hourly/daily/monthly values
+  """
+  entries: [PriceRatingEntry!]!
+}
+
+type PriceRatingThresholdPercentages {
+  """
+  The percentage difference when the price is considered to be 'high' (market dependent)
+  """
+  high: Float!
+
+  """
+  The percentage difference when the price is considered to be 'low' (market dependent)
+  """
+  low: Float!
+}
+
+type PriceRating {
+  """
+  The different 'high'/'low' price breakpoints (market dependent)
+  """
+  thresholdPercentages: PriceRatingThresholdPercentages!
+
+  """
+  The hourly prices of today, the previous 7 days, and tomorrow
+  """
+  hourly: PriceRatingType!
+
+  """
+  The daily prices of today and the previous 30 days
+  """
+  daily: PriceRatingType!
+
+  """
+  The monthly prices of this month and the previous 31 months
+  """
+  monthly: PriceRatingType!
+}
+
+type Subscription {
+  id: ID!
+
+  """
+  The owner of the subscription
+  """
+  subscriber: LegalEntity!
+
+  """
+  The time the subscription started
+  """
+  validFrom: String
+
+  """
+  The time the subscription ended
+  """
+  validTo: String
+
+  """
+  The current status of the subscription
+  """
+  status: String
+
+  statusReason: String @deprecated(reason: "no longer available.")
+
+  """
+  Price information related to the subscription
+  """
+  priceInfo: PriceInfo
+
+  """
+  Price information related to the subscription
+  """
+  priceRating: PriceRating
+}
+
+type Consumption {
+  from: String!
+
+  to: String!
+
+  unitPrice: Float
+
+  unitPriceVAT: Float
+
+  """
+  kWh consumed
+  """
+  consumption: Float
+
+  consumptionUnit: String
+
+  """
+  Total cost of the consumption
+  """
+  totalCost: Float @deprecated(reason: "use cost instead.")
+
+  unitCost: Float @deprecated(reason: "use cost instead")
+
+  cost: Float
+
+  """
+  The cost currency
+  """
+  currency: String
+}
+
+type Production {
+  from: String!
+
+  to: String!
+
+  unitPrice: Float
+
+  unitPriceVAT: Float
+
+  """
+  kWh produced
+  """
+  production: Float
+
+  productionUnit: String
+
+  """
+  Total profit of the production
+  """
+  profit: Float
+
+  """
+  The cost currency
+  """
+  currency: String
+}
+
+type HomeConsumptionEdge {
+  cursor: String!
+
+  node: Consumption!
+}
+
+type HomeProductionEdge {
+  cursor: String!
+
+  node: Production!
+}
+
+type HomeConsumptionConnection {
+  pageInfo: HomeConsumptionPageInfo!
+
+  nodes: [Consumption]
+
+  edges: [HomeConsumptionEdge]
+}
+
+type HomeProductionConnection {
+  pageInfo: HomeProductionPageInfo!
+
+  nodes: [Production]
+
+  edges: [HomeProductionEdge]
+}
+
+type MeteringPointData {
+  """
+  The metering point ID of the home
+  """
+  consumptionEan: String
+
+  """
+  The grid provider of the home
+  """
+  gridCompany: String
+
+  """
+  The grid area the home/metering point belongs to
+  """
+  gridAreaCode: String
+
+  """
+  The price area the home/metering point belongs to
+  """
+  priceAreaCode: String
+
+  """
+  The metering point ID of the production
+  """
+  productionEan: String
+
+  """
+  The eltax type of the home (only relevant for Swedish homes)
+  """
+  energyTaxType: String
+
+  """
+  The VAT type of the home (only relevant for Norwegian homes)
+  """
+  vatType: String
+
+  """
+  The estimated annual consumption as reported by grid company
+  """
+  estimatedAnnualConsumption: Int
+}
+
+enum EnergyResolution {
+  HOURLY
+
+  DAILY
+
+  WEEKLY
+
+  MONTHLY
+
+  ANNUAL
+}
+
+enum HomeType {
+  APARTMENT
+
+  ROWHOUSE
+
+  HOUSE
+
+  COTTAGE
+}
+
+enum HeatingSource {
+  AIR2AIR_HEATPUMP
+
+  ELECTRICITY
+
+  GROUND
+
+  DISTRICT_HEATING
+
+  ELECTRIC_BOILER
+
+  AIR2WATER_HEATPUMP
+
+  OTHER
+}
+
+enum HomeAvatar {
+  APARTMENT
+
+  ROWHOUSE
+
+  FLOORHOUSE1
+
+  FLOORHOUSE2
+
+  FLOORHOUSE3
+
+  COTTAGE
+
+  CASTLE
+}
+
+type HomeFeatures {
+  """
+  'true' if Tibber Pulse or Watty device is paired at home
+  """
+  realTimeConsumptionEnabled: Boolean
+}
+
+type Home {
+  id: ID!
+
+  """
+  The time zone the home resides in
+  """
+  timeZone: String!
+
+  """
+  The nickname given to the home by the user
+  """
+  appNickname: String
+
+  """
+  The chosen avatar for the home
+  """
+  appAvatar: HomeAvatar!
+
+  """
+  The size of the home in square meters
+  """
+  size: Int
+
+  """
+  The type of home.
+  """
+  type: HomeType!
+
+  """
+  The number of people living in the home
+  """
+  numberOfResidents: Int
+
+  """
+  The primary form of heating in the household
+  """
+  primaryHeatingSource: HeatingSource
+
+  """
+  Whether the home has a ventilation system
+  """
+  hasVentilationSystem: Boolean
+
+  """
+  The main fuse size
+  """
+  mainFuseSize: Int
+
+  address: Address
+
+  """
+  The registered owner of the house
+  """
+  owner: LegalEntity
+
+  meteringPointData: MeteringPointData
+
+  """
+  The current/latest subscription related to the home
+  """
+  currentSubscription: Subscription
+
+  """
+  All historic subscriptions related to the home
+  """
+  subscriptions: [Subscription]!
+
+  """
+  Consumption connection
+  """
+  consumption(resolution: EnergyResolution!, "Take the `n` first results from cursor. Cannot be used in conjunction with `last`" first: Int, "Take the `n` last results from cursor. Cannot be used in conjunction with `first`" last: Int, "Base64-encoded ISO8601 date\/time cursor start. Cannot be used in conjunction with `after`" before: String, "Base64-encoded ISO8601 date\/time cursor start. Cannot be used in conjunction with `before`" after: String, "Whether to include empty nodes. Default value: false" filterEmptyNodes: Boolean = false): HomeConsumptionConnection
+
+  """
+  Production connection
+  """
+  production(resolution: EnergyResolution!, "Take the `n` first results from cursor. Cannot be used in conjunction with `last`" first: Int, "Take the `n` last results from cursor. Cannot be used in conjunction with `first`" last: Int, "Base64-encoded ISO8601 date\/time cursor start. Cannot be used in conjunction with `after`" before: String, "Base64-encoded ISO8601 date\/time cursor start. Cannot be used in conjunction with `before`" after: String, "Whether to include empty nodes. Default value: false" filterEmptyNodes: Boolean = false): HomeProductionConnection
+
+  """
+  Home features
+  """
+  features: HomeFeatures
+}
+
+type Viewer {
+  login: String
+
+  """
+  Unique user identifier
+  """
+  userId: String
+
+  name: String
+
+  """
+  The type of account for the logged-in user.
+  """
+  accountType: [String!]!
+
+  """
+  All homes visible to the logged-in user
+  """
+  homes: [Home]!
+
+  """
+  Single home by its ID
+  """
+  home(id: ID!): Home!
+
+  """
+  URL for websocket subscriptions
+  """
+  websocketSubscriptionUrl: String
+}
+
+type Query {
+  """
+  This contains data about the logged-in user
+  """
+  viewer: Viewer!
+}
+
+input MeterReadingInput {
+  homeId: ID!
+
+  time: String
+
+  reading: Int!
+}
+
+type MeterReadingResponse {
+  homeId: ID!
+
+  time: String
+
+  reading: Int!
+}
+
+input UpdateHomeInput {
+  homeId: ID!
+
+  appNickname: String
+
+  """
+  The chosen avatar for the home
+  """
+  appAvatar: HomeAvatar
+
+  """
+  The size of the home in square meters
+  """
+  size: Int
+
+  """
+  The type of home.
+  """
+  type: HomeType
+
+  """
+  The number of people living in the home
+  """
+  numberOfResidents: Int
+
+  """
+  The primary form of heating in the household
+  """
+  primaryHeatingSource: HeatingSource
+
+  """
+  Whether the home has a ventilation system
+  """
+  hasVentilationSystem: Boolean
+
+  """
+  The main fuse size
+  """
+  mainFuseSize: Int
+}
+
+type LiveMeasurement {
+  """
+  Timestamp when usage occurred
+  """
+  timestamp: String!
+
+  """
+  Consumption at the moment (Watt)
+  """
+  power: Float!
+
+  """
+  Last meter active import register state (kWh)
+  """
+  lastMeterConsumption: Float
+
+  """
+  kWh consumed since midnight
+  """
+  accumulatedConsumption: Float!
+
+  """
+  net kWh produced since midnight
+  """
+  accumulatedProduction: Float!
+
+  """
+  kWh consumed since since last hour shift
+  """
+  accumulatedConsumptionLastHour: Float!
+
+  """
+  net kWh produced since last hour shift
+  """
+  accumulatedProductionLastHour: Float!
+
+  """
+  Accumulated cost since midnight; requires active Tibber power deal; includes VAT (where applicable)
+  """
+  accumulatedCost: Float
+
+  """
+  Accumulated reward since midnight; requires active Tibber power deal
+  """
+  accumulatedReward: Float
+
+  """
+  Currency of displayed cost; requires active Tibber power deal
+  """
+  currency: String
+
+  """
+  Min consumption since midnight (Watt)
+  """
+  minPower: Float!
+
+  """
+  Average consumption since midnight (Watt)
+  """
+  averagePower: Float!
+
+  """
+  Peak consumption since midnight  (Watt)
+  """
+  maxPower: Float!
+
+  """
+  Net production (A-) at the moment (Watt)
+  """
+  powerProduction: Float
+
+  """
+  Reactive consumption (Q+) at the moment (kVAr)
+  """
+  powerReactive: Float
+
+  """
+  Net reactive production (Q-) at the moment (kVAr)
+  """
+  powerProductionReactive: Float
+
+  """
+  Min net production since midnight (Watt)
+  """
+  minPowerProduction: Float
+
+  """
+  Max net production since midnight (Watt)
+  """
+  maxPowerProduction: Float
+
+  """
+  Last meter active export register state (kWh)
+  """
+  lastMeterProduction: Float
+
+  """
+  Power factor (active power / apparent power)
+  """
+  powerFactor: Float
+
+  """
+  Voltage on phase 1; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware.
+  """
+  voltagePhase1: Float
+
+  """
+  Voltage on phase 2; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware. Value is always null for single phase meters.
+  """
+  voltagePhase2: Float
+
+  """
+  Voltage on phase 3; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware. Value is always null for single phase meters.
+  """
+  voltagePhase3: Float
+
+  """
+  Current on phase 1; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware.
+  """
+  currentPhase1: Float @deprecated(reason: "Replaced by currentL1.")
+
+  """
+  Current on L1; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware.
+  """
+  currentL1: Float
+
+  """
+  Current on phase 2; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware. Value is always null for single phase meters.
+  """
+  currentPhase2: Float @deprecated(reason: "Replaced by currentL2.")
+
+  """
+  Current on L2; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware. Value is always null for single phase meters.
+  """
+  currentL2: Float
+
+  """
+  Current on phase 3; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware. Value is always null for single phase meters.
+  """
+  currentPhase3: Float @deprecated(reason: "Replaced by currentL3.")
+
+  """
+  Current on L3; on Kaifa and Aidon meters the value is not part of every HAN data frame therefore the value is null at timestamps with second value other than 0, 10, 20, 30, 40, 50. There can be other deviations based on concrete meter firmware. Value is always null for single phase meters.
+  """
+  currentL3: Float
+
+  """
+  Device signal strength (Pulse - dB; Watty - percent)
+  """
+  signalStrength: Int
+}
+
+enum AppScreen {
+  HOME
+
+  REPORTS
+
+  CONSUMPTION
+
+  COMPARISON
+
+  DISAGGREGATION
+
+  HOME_PROFILE
+
+  CUSTOMER_PROFILE
+
+  METER_READING
+
+  NOTIFICATIONS
+
+  INVOICES
+}
+
+input PushNotificationInput {
+  title: String
+
+  message: String!
+
+  screenToOpen: AppScreen
+}
+
+type PushNotificationResponse {
+  successful: Boolean!
+
+  pushedToNumberOfDevices: Int!
+}
+
+type RootMutation {
+  """
+  Send meter reading for home (only available for Norwegian users)
+  """
+  sendMeterReading(input: MeterReadingInput!): MeterReadingResponse!
+
+  """
+  Update home information
+  """
+  updateHome(input: UpdateHomeInput!): Home!
+
+  """
+  Send notification to Tibber app on registered devices
+  """
+  sendPushNotification(input: PushNotificationInput!): PushNotificationResponse!
+}
+
+type RootSubscription {
+  """
+  Subscribe to real-time measurement stream from Pulse or Watty device
+  """
+  liveMeasurement(homeId: ID!): LiveMeasurement
+
+  """
+  Subscribe to test stream
+  """
+  testMeasurement(homeId: ID!): LiveMeasurement
+}
+
+"""
+A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.
+"""
+type __Schema {
+  description: String
+
+  """
+  A list of all types supported by this server.
+  """
+  types: [__Type!]!
+
+  """
+  The type that query operations will be rooted at.
+  """
+  queryType: __Type!
+
+  """
+  If this server supports mutation, the type that mutation operations will be rooted at.
+  """
+  mutationType: __Type
+
+  """
+  If this server support subscription, the type that subscription operations will be rooted at.
+  """
+  subscriptionType: __Type
+
+  """
+  A list of all directives supported by this server.
+  """
+  directives: [__Directive!]!
+}
+
+"""
+The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.
+
+Depending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name, description and optional `specifiedByURL`, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.
+"""
+type __Type {
+  kind: __TypeKind!
+
+  name: String
+
+  description: String
+
+  specifiedByURL: String
+
+  fields(includeDeprecated: Boolean = false): [__Field!]
+
+  interfaces: [__Type!]
+
+  possibleTypes: [__Type!]
+
+  enumValues(includeDeprecated: Boolean = false): [__EnumValue!]
+
+  inputFields(includeDeprecated: Boolean = false): [__InputValue!]
+
+  ofType: __Type
+}
+
+"""
+An enum describing what kind of type a given `__Type` is.
+"""
+enum __TypeKind {
+  """
+  Indicates this type is a scalar.
+  """
+  SCALAR
+
+  """
+  Indicates this type is an object. `fields` and `interfaces` are valid fields.
+  """
+  OBJECT
+
+  """
+  Indicates this type is an interface. `fields`, `interfaces`, and `possibleTypes` are valid fields.
+  """
+  INTERFACE
+
+  """
+  Indicates this type is a union. `possibleTypes` is a valid field.
+  """
+  UNION
+
+  """
+  Indicates this type is an enum. `enumValues` is a valid field.
+  """
+  ENUM
+
+  """
+  Indicates this type is an input object. `inputFields` is a valid field.
+  """
+  INPUT_OBJECT
+
+  """
+  Indicates this type is a list. `ofType` is a valid field.
+  """
+  LIST
+
+  """
+  Indicates this type is a non-null. `ofType` is a valid field.
+  """
+  NON_NULL
+}
+
+"""
+Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.
+"""
+type __Field {
+  name: String!
+
+  description: String
+
+  args(includeDeprecated: Boolean = false): [__InputValue!]!
+
+  type: __Type!
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+"""
+Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.
+"""
+type __InputValue {
+  name: String!
+
+  description: String
+
+  type: __Type!
+
+  """
+  A GraphQL-formatted string representing the default value for this input value.
+  """
+  defaultValue: String
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+"""
+One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.
+"""
+type __EnumValue {
+  name: String!
+
+  description: String
+
+  isDeprecated: Boolean!
+
+  deprecationReason: String
+}
+
+"""
+A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.
+
+In some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.
+"""
+type __Directive {
+  name: String!
+
+  description: String
+
+  isRepeatable: Boolean!
+
+  locations: [__DirectiveLocation!]!
+
+  args(includeDeprecated: Boolean = false): [__InputValue!]!
+}
+
+"""
+A Directive can be adjacent to many parts of the GraphQL language, a __DirectiveLocation describes one such possible adjacencies.
+"""
+enum __DirectiveLocation {
+  """
+  Location adjacent to a query operation.
+  """
+  QUERY
+
+  """
+  Location adjacent to a mutation operation.
+  """
+  MUTATION
+
+  """
+  Location adjacent to a subscription operation.
+  """
+  SUBSCRIPTION
+
+  """
+  Location adjacent to a field.
+  """
+  FIELD
+
+  """
+  Location adjacent to a fragment definition.
+  """
+  FRAGMENT_DEFINITION
+
+  """
+  Location adjacent to a fragment spread.
+  """
+  FRAGMENT_SPREAD
+
+  """
+  Location adjacent to an inline fragment.
+  """
+  INLINE_FRAGMENT
+
+  """
+  Location adjacent to a variable definition.
+  """
+  VARIABLE_DEFINITION
+
+  """
+  Location adjacent to a schema definition.
+  """
+  SCHEMA
+
+  """
+  Location adjacent to a scalar definition.
+  """
+  SCALAR
+
+  """
+  Location adjacent to an object type definition.
+  """
+  OBJECT
+
+  """
+  Location adjacent to a field definition.
+  """
+  FIELD_DEFINITION
+
+  """
+  Location adjacent to an argument definition.
+  """
+  ARGUMENT_DEFINITION
+
+  """
+  Location adjacent to an interface definition.
+  """
+  INTERFACE
+
+  """
+  Location adjacent to a union definition.
+  """
+  UNION
+
+  """
+  Location adjacent to an enum definition.
+  """
+  ENUM
+
+  """
+  Location adjacent to an enum value definition.
+  """
+  ENUM_VALUE
+
+  """
+  Location adjacent to an input object type definition.
+  """
+  INPUT_OBJECT
+
+  """
+  Location adjacent to an input object field definition.
+  """
+  INPUT_FIELD_DEFINITION
+}
+
+"""
+Directs the executor to include this field or fragment only when the `if` argument is true.
+"""
+directive @include ("Included when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+
+"""
+Directs the executor to skip this field or fragment when the `if` argument is true.
+"""
+directive @skip ("Skipped when true." if: Boolean!) on FIELD|FRAGMENT_SPREAD|INLINE_FRAGMENT
+
+"""
+Marks an element of a GraphQL schema as no longer supported.
+"""
+directive @deprecated ("Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted using the Markdown syntax, as specified by [CommonMark](https:\/\/commonmark.org\/)." reason: String = "No longer supported") on FIELD_DEFINITION|ARGUMENT_DEFINITION|INPUT_FIELD_DEFINITION|ENUM_VALUE
+
+"""
+Exposes a URL that specifies the behavior of this scalar.
+"""
+directive @specifiedBy ("The URL that specifies the behavior of this scalar." url: String!) on SCALAR
+
+schema {
+  query: Query
+  mutation: RootMutation
+  subscription: RootSubscription
+}
