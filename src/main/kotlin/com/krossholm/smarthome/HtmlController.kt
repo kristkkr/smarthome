@@ -10,8 +10,9 @@ class HtmlController {
 
     @GetMapping("/")
     fun smarthome(model: Model): String {
-        model["title"] = "smarthome"
-        return "smarthome"
+        val title = "smarthome"
+        model["title"] = title
+        return title
     }
 
 }
